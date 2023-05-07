@@ -65,6 +65,10 @@ func apply(op operation, a int, b int) int {
 }
 
 // task
+// packages 
+// -- go get github.com/lib/pq
+// -- go get github.com/golang-jwt/jwt
+// -- cloud.google.com/go/bigquery
 // auth
 // -- jwt
 // -- generate token // string
@@ -80,5 +84,5 @@ func apply(op operation, a int, b int) int {
 // -- struct nameTable
 // -- map (array of table) to table name from postgres
 // log
-
+//-- 
 
