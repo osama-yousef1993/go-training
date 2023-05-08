@@ -2,70 +2,46 @@ package main
 
 import (
 	"fmt"
-
+	"github.com/joho/godotenv"
+	auth "github.com/osama-yousef1993/go-training/auth"
+	log "github.com/osama-yousef1993/go-training/log"
+	"github.com/osama-yousef1993/go-training/store"
 	_ "github.com/osama-yousef1993/go-training/training"
 )
 
 func main() {
-	// fmt.Println("Data Types Function")
-	// training.BasicTypes()
-	// training.AggregateTypes()
-	// training.InterfaceTypes()
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.LogErr("error loading environment file " + err.Error())
+	}
 
-	// fmt.Println("Control Flow Functions")
-	// training.IfElse()
-	// training.ForLoop()
-	// training.SwitchStatement()
-	// fmt.Println(sum(1,2,3,4))
+	tables, err := store.PgInfoSchema()
+	if err != nil {
+		log.LogErr(err.Error())
+	}
+	fmt.Println(tables)
 
-	// func(name string) {
-	// 	fmt.Printf("%s Functions", name)
-	// 	fmt.Println(sum(1,2,3,4))
-	// }("anonymous")
+	values, err := store.BqInfoSchema()
+	if err != nil {
+		log.LogErr(err.Error())
+	}
+	fmt.Println(values)
 
-	// var c calculate
-	// c = add
-	// fmt.Println(c(1,2))
-	// c = sub
-	// fmt.Println(c(1,2))
+	token, err := auth.GenerateToken("name@something.com")
+	if err != nil {
+		errStr := fmt.Sprintf("error generating token - %s", err)
+		log.LogErr(errStr)
+	}
 
-	// res, err := divide(10, 0)
-	// if err != nil {
-	// 	fmt.Printf("%s Functions", err.Error())
-	// }
-	// fmt.Printf("%f Functions", res)
-
-	// x := 0
-
-	// incr := IntSeq()
-
-	// incr()
-	// incr()
-	// incr()
-	// fmt.Printf("%d Functions", x)
-	// fn := compose(square, double)
-	// fmt.Printf("%d Functions", fn(3))
-
-	f := add
-	fmt.Printf("%d Functions \n", f(3, 3))
-	fmt.Printf("%d Functions \n", apply(f, 3, 3))
-	errStr := fmt.Sprintf("%s-%d", "test", 10)
-	panic(errStr)
-
-}
-
-func add(a int, b int) int {
-	return a + b
-}
-
-type operation func(int, int) int
-
-func apply(op operation, a int, b int) int {
-	return op(a, b)
+	err = auth.CheckToken(token)
+	if err != nil {
+		log.LogErr(err.Error())
+	}
+	log.LogInfo("Token is valid")
 }
 
 // task
-// packages 
+// packages
 // -- go get github.com/lib/pq
 // -- go get github.com/golang-jwt/jwt
 // -- cloud.google.com/go/bigquery
@@ -75,14 +51,13 @@ func apply(op operation, a int, b int) int {
 // -- check token // @hotmail// @gmail // string
 // .env file
 // postgres
-// -- connections 
+// -- connections
 // -- struct nameTable
 // -- map (array of table) to table name from postgres
 // -- SELECT table_name FROM information_schema.tables WHERE table_schema='public'
 // bigquery
-// -- connections 
+// -- connections
 // -- struct nameTable
 // -- map (array of table) to table name from postgres
 // log
-//-- 
-
+//--
