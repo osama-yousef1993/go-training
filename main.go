@@ -3,22 +3,37 @@ package main
 import (
 	"fmt"
 
-	"github.com/osama-yousef1993/go-training/training"
+	"github.com/osama-yousef1993/go-training/auth"
 )
 
 func main() {
-	fmt.Println("Data Types Function")
-	training.BasicTypes()
-	training.AggregateTypes()
-	training.InterfaceTypes()
+	// fmt.Println("Data Types Function")
+	// training.BasicTypes()
+	// training.AggregateTypes()
+	// training.InterfaceTypes()
 
-	fmt.Println("Control Flow Functions")
-	training.IfElse()
-	training.ForLoop()
-	training.SwitchStatement()
+	// fmt.Println("Control Flow Functions")
+	// training.IfElse()
+	// training.ForLoop()
+	// training.SwitchStatement()
+
+	email, err := auth.GenerateToken("test@hotmail.com")
+
+	if err != nil {
+
+		fmt.Printf("%s Error", err.Error())
+	}
+	fmt.Printf("%s ", email)
+	// email := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6InRlc3RAaG90bWFpbC5jb20iLCJleHAiOjE2ODM0OTY1MTl9.Vk3j2uu35RJ_9Py7F6mi4fTT79VH-NuNWGDscO8G718"
+
+	token, err := auth.ValidateToken(email)
+	if err != nil {
+
+		fmt.Printf("%s Error", err.Error())
+	}
+	fmt.Printf("%s ", token)
 
 	// func(name string) {
-	// 	fmt.Printf("%s Functions", name)
 	// 	fmt.Println(sum(1,2,3,4))
 	// }("anonymous")
 
@@ -62,3 +77,16 @@ func main() {
 // -- map (array of table) to table name from postgres
 // log
 //--
+
+
+// task two 
+//"github.com/gorilla/mux"
+// -- endpoint generate token 
+// -- endpoiint1 write table // auth user
+// -- endpoiint2 read table 
+// function insert table 
+// -- string
+//-- int 
+// json *********
+// select table 
+// 
