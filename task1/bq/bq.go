@@ -2,7 +2,7 @@ package bq
 
 import (
 	"context"
-	"go-training/log"
+	"go-training/task1/log"
 	"os"
 
 	"cloud.google.com/go/bigquery"

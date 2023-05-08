@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
-	"go-training/auth"
-	"go-training/log"
+	"go-training/task1/auth"
+	"go-training/task1/log"
 	"os"
 	"strings"
 )

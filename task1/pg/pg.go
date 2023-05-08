@@ -3,7 +3,7 @@ package pg
 import (
 	"database/sql"
 	"fmt"
-	"go-training/log"
+	"go-training/task1/log"
 	"os"
 
 	_ "github.com/golang-jwt/jwt"

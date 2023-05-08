@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"go-training/log"
+	"go-training/task1/log"
 	"net/mail"
 	"os"
 	"time"
