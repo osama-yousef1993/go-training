@@ -1,44 +1,34 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/osama-yousef1993/go-training/training"
+	"bufio"
+	"go-training/auth"
+	"go-training/log"
+	"os"
+	"strings"
 )
 
 func main() {
-	fmt.Println("Data Types Function")
-	training.BasicTypes()
-	training.AggregateTypes()
-	training.InterfaceTypes()
+	getEnv()
+	log.Info("generating token...")
+	auth.GenerateToken()
+}
 
-	fmt.Println("Control Flow Functions")
-	training.IfElse()
-	training.ForLoop()
-	training.SwitchStatement()
+func getEnv() {
+	file, err := os.Open(".env")
+	if err != nil {
+		log.Err("error reading .env file")
 
-	// func(name string) {
-	// 	fmt.Printf("%s Functions", name)
-	// 	fmt.Println(sum(1,2,3,4))
-	// }("anonymous")
-
-	// res, err := divide(10, 0)
-	// if err != nil {
-	// 	fmt.Printf("%s Functions", err.Error())
-	// }
-	// fmt.Printf("%f Functions", res)
-
-	// x := 0
-
-	// incr := IntSeq()
-
-	// incr()
-	// incr()
-	// incr()
-	// fmt.Printf("%d Functions", x)
-	// fn := compose(square, double)
-	// fmt.Printf("%d Functions", fn(3))
-
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		parts := strings.Split(line, "=")
+		key := parts[0]
+		value := parts[1]
+		os.Setenv(key, value)
+	}
 }
 
 // task
