@@ -9,7 +9,7 @@ import (
 	jwt "github.com/golang-jwt/jwt"
 )
 
-func GenerateToken() {
+func GenerateToken() string {
 	mailAddress := os.Getenv("email")
 	validMailAddress(mailAddress)
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -23,6 +23,7 @@ func GenerateToken() {
 	checkErrors(err, "error while creating token ")
 	tokenString = "token is: " + tokenString
 	log.Info(tokenString)
+	return tokenString
 }
 
 func validMailAddress(email string) {
