@@ -25,7 +25,7 @@ type insertData struct {
 
 func InsertIntoTable(db *sql.DB, data insertData) {
 	log.Info("insert Operation")
-	_, err := db.Exec(`INSERT INTO tableName (myString, myInt) VALUES ($1, $2)`)
+	_, err := db.Exec(`INSERT INTO tableName (myString, myInt) VALUES ($1, $2)`, data.myString, data.myInt)
 	checkErrors(err, "error inserting data into the DB")
 }
 
