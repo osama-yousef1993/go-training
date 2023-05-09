@@ -1,92 +1,78 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
+	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/osama-yousef1993/go-training/auth"
+	"github.com/osama-yousef1993/go-training/store"
 )
 
 func main() {
-	// fmt.Println("Data Types Function")
-	// training.BasicTypes()
-	// training.AggregateTypes()
-	// training.InterfaceTypes()
+	var authMiddle auth.AuthMiddleware
 
-	// fmt.Println("Control Flow Functions")
-	// training.IfElse()
-	// training.ForLoop()
-	// training.SwitchStatement()
+	r := mux.NewRouter()
 
-	email, err := auth.GenerateToken("test@hotmail.com")
+	r.HandleFunc("/generate-token", GetToken).Methods(http.MethodGet)
+	r.Handle("/get-user", authMiddle.IsAuthorized(http.HandlerFunc(GetUser))).Methods(http.MethodGet)
+	r.Handle("/get-tables", authMiddle.IsAuthorized(http.HandlerFunc(ReadTables))).Methods(http.MethodGet)
 
+	http.ListenAndServe(":8080", r)
+}
+
+func GetToken(w http.ResponseWriter, r *http.Request) {
+	var token auth.Generate
+	stringToken, err := auth.GenerateToken("test@hotmail.com")
 	if err != nil {
-
-		fmt.Printf("%s Error", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	fmt.Printf("%s ", email)
-	// email := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJlbWFpbCI6InRlc3RAaG90bWFpbC5jb20iLCJleHAiOjE2ODM0OTY1MTl9.Vk3j2uu35RJ_9Py7F6mi4fTT79VH-NuNWGDscO8G718"
+	token.Token = stringToken
 
-	token, err := auth.ValidateToken(email)
+	res, err := json.Marshal(token)
 	if err != nil {
-
-		fmt.Printf("%s Error", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	fmt.Printf("%s ", token)
+	w.Write(res)
+}
 
-	// func(name string) {
-	// 	fmt.Println(sum(1,2,3,4))
-	// }("anonymous")
+func GetUser(w http.ResponseWriter, r *http.Request) {
+	user := make(map[string]string)
 
-	// res, err := divide(10, 0)
-	// if err != nil {
-	// 	fmt.Printf("%s Functions", err.Error())
-	// }
-	// fmt.Printf("%f Functions", res)
+	user["first_name"] = "test"
+	user["Last_name"] = "test"
+	user["email"] = "test@hotmail.com"
 
-	// x := 0
-
-	// incr := IntSeq()
-
-	// incr()
-	// incr()
-	// incr()
-	// fmt.Printf("%d Functions", x)
-	// fn := compose(square, double)
-	// fmt.Printf("%d Functions", fn(3))
+	res, err := json.Marshal(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(res)
 
 }
 
-// task
-// packages
-// -- go get github.com/lib/pq
-// -- go get github.com/golang-jwt/jwt
-// -- cloud.google.com/go/bigquery
-// auth
-// -- jwt
-// -- generate token // string
-// -- check token // @hotmail// @gmail // string
-// .env file
-// postgres
-// -- connections
-// -- struct nameTable
-// -- map (array of table) to table name from postgres
-// -- SELECT table_name FROM information_schema.tables WHERE table_schema='public'
-// bigquery
-// -- connections
-// -- struct nameTable
-// -- map (array of table) to table name from postgres
-// log
-//--
+func ReadTables(w http.ResponseWriter, r *http.Request) {
+	tables, err := store.ReadTables()
 
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	res, err := json.Marshal(tables)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(res)
+}
 
-// task two 
-//"github.com/gorilla/mux"
-// -- endpoint generate token 
-// -- endpoiint1 write table // auth user
-// -- endpoiint2 read table 
-// function insert table 
-// -- string
-//-- int 
-// json *********
-// select table 
-// 
+// full api repo
+// get post put  delete
+// read api (read from database)
+// build api (write database)
+// user register
+// api movies 
+// create Tables
