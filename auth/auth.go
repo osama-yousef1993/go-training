@@ -1,52 +1,73 @@
-package auth
-
+package main
 import (
-	"fmt"
-	"strings"
-	"time"
-
 	"github.com/golang-jwt/jwt"
+	"fmt"
+	"time"
+	"os"
+	"strings"
 )
+var mySigningKey = []byte("keyfromenv")
 
-var jwtSecretKey = "mysecrettokenkey"
-
-func GenerateToken(email string) (string, error) {
-	token := jwt.New(jwt.SigningMethodES256)
-	// s := "https://www.googleapis.com/oauth2/v3/certs"
-
-	claims := token.Claims.(jwt.MapClaims)
-	claims["authorized"] = true
-	claims["email"] = email
-	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
-
-	to := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	tokenString, err := to.SignedString([]byte(jwtSecretKey))
-
-	if err != nil {
-		return "", err
-	}
-	return tokenString, nil
-
+type mainClaims struct {
+	Email string `json:"email"`
+	jwt.StandardClaims
 }
 
-func ValidateToken(tokenString string) (bool, error) {
-	isAuth := false
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(jwtSecretKey), nil
-	})
-	if err != nil {
-		return isAuth, err
-	}
-	if email, ok := token.Claims.(jwt.MapClaims)["email"].(string); ok {
-		if strings.HasSuffix(email, "@forbes.com") || strings.HasSuffix(email, "@gmail.com") {
-			isAuth = true
+var claims = mainClaims{
+	"hello@outlook.com",
+	jwt.StandardClaims{
+		ExpiresAt: 15000,
+		Issuer: "test",
+	},
+}
+
+func genjwt() (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	ss, err := token.SignedString(mySigningKey)
+	fmt.Printf("%v %v", ss, err)
+	return ss, err
+
+	
+}
+
+
+func valjwt(tok string, key string) {
+	at(time.Unix(0, 0), func() {
+		token, err := jwt.ParseWithClaims(tok, &mainClaims{}, func(token *jwt.Token) (interface{}, error) {
+			return []byte(key), nil
+		})
+
+		email_check :="@outlook.com"
+
+
+
+		if claims, ok := token.Claims.(*mainClaims); ok && token.Valid && strings.Contains(claims.Email, email_check) {
+			fmt.Printf("%v %v %v", claims.Email, claims.StandardClaims.ExpiresAt, claims.StandardClaims.Issuer)
+		} else {
+			if !strings.Contains(claims.Email, email_check) {
+				fmt.Println("You are not authorized ")
+			} else {
+				fmt.Println(err)
+			}
 		}
-	}
-	if !isAuth {
-		fmt.Println(" user not authorized")
-		return isAuth, nil
-	}
+	})
 
-	return isAuth, nil
+
 }
+
+
+func at(t time.Time, f func()) {
+	jwt.TimeFunc = func() time.Time {
+		return t 
+	}
+	f()
+	jwt.TimeFunc = time.Now
+}
+
+func main() {
+    var key string = os.Getenv("KEY") 
+	t, _ := genjwt()
+	fmt.Println()
+    valjwt(t , key)
+}
+
